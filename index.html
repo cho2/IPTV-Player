@@ -523,6 +523,29 @@
             color: var(--text-muted);
         }
 
+        /* ─── RESOLUTION SELECTOR ─── */
+        #resSelector {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--text);
+            cursor: pointer;
+            outline: none;
+            flex-shrink: 0;
+            transition: border-color var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6b82' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 26px;
+        }
+        #resSelector:focus { border-color: var(--accent); }
+        #resSelector option { background: var(--surface); color: var(--text); }
+
         /* ─── MOBILE ─── */
         #sidebarToggle { display: none; }
         @media (max-width: 700px) {
@@ -548,6 +571,15 @@
     <input type="text" id="m3uURL" placeholder="Enter M3U URL...">
     <button class="btn-primary" id="loadM3U">Load</button>
     <button class="btn-ghost" id="pasteM3UBtn">📋 Paste M3U</button>
+    <select id="resSelector" title="Max resolution">
+        <option value="0">Auto</option>
+        <option value="1080">1080p</option>
+        <option value="720">720p</option>
+        <option value="540">540p</option>
+        <option value="480">480p</option>
+        <option value="360">360p</option>
+        <option value="240">240p</option>
+    </select>
     <button class="btn-icon" id="themeToggle" title="Toggle theme">🌙</button>
 </div>
 
