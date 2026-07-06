@@ -686,6 +686,31 @@
     const closeModalBtn      = $('closeModal');
     const m3uPasteArea       = $('m3uPasteArea');
     const loadPastedBtn      = $('loadPasted');
+    const resSelector        = $('resSelector');
+
+    // ── RESOLUTION ─────────────────────────────────────
+    function getMaxHeight() {
+        const v = parseInt(resSelector.value, 10);
+        return v === 0 ? Infinity : v;
+    }
+
+    function applyResolution() {
+        if (!player) return;
+        const maxHeight = getMaxHeight();
+        player.configure({
+            abr: {
+                restrictions: {
+                    maxHeight: maxHeight === Infinity ? Number.POSITIVE_INFINITY : maxHeight
+                }
+            }
+        });
+    }
+
+    resSelector.addEventListener('change', () => {
+        applyResolution();
+        const label = resSelector.options[resSelector.selectedIndex].text;
+        showToast(`Resolution capped at ${label}`);
+    });
 
     // ── THEME ──────────────────────────────────────────
     (function () {
@@ -944,6 +969,7 @@
             }
 
             await player.load(item.source);
+            applyResolution();
             videoPlayer.play().catch(() => {});
             showLoading(false);
             nowPlayingName.textContent = item.tvgName || 'Live';
@@ -1042,7 +1068,23 @@
         } catch (_) { return b64; }
     }
 
-    function toHttps(url) { return url.replace(/^http:/, 'https:'); }
+    function toHttps(url) {
+        // Sanitize: remove any embedded whitespace (e.g. "?cid=bs24 &isp=5")
+        url = url.replace(/\s+/g, '');
+        try {
+            const u = new URL(url);
+            // Only upgrade to HTTPS if using the default HTTP port (80 or unspecified).
+            // Non-standard ports (e.g. 8000) almost certainly don't serve HTTPS —
+            // forcing https:// on them causes Shaka error 1003 (UNSUPPORTED_SCHEME).
+            if (u.protocol === 'http:' && (u.port === '' || u.port === '80')) {
+                u.protocol = 'https:';
+                return u.toString();
+            }
+            return url; // keep as-is (http + non-standard port, rtmp, etc.)
+        } catch (_) {
+            return url;
+        }
+    }
 </script>
 
 <noscript>
